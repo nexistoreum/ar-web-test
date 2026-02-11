@@ -32,30 +32,40 @@
       <h1 style="margin:0;">🌍</h1>
       <p>แตะตรงไหนก็ได้<br>เพื่อเริ่มสแกนพื้น</p>
     </div>
-
+    <audio id="ar-sound" src="VENUS_Master.mp3" loop></audio>
     <model-viewer 
         id="my-ar-model"
-        src="earth_glb-opt.glb" 
+        src="mars_glb-opt.glb" 
         ar 
         ar-modes="webxr scene-viewer quick-look" 
         ar-placement="floor"
         camera-controls 
         shadow-intensity="1" 
-        autoplay
+        autoplay                
+        animation-name="All Animations"
         auto-rotate
         scale="0.5 0.5 0.5"> </model-viewer>
 
     <script>
-        const modelViewer = document.querySelector('#my-ar-model');
-        const overlay = document.querySelector('#instructions');
+      const modelViewer = document.querySelector('#my-ar-model');
+      const overlay = document.querySelector('#instructions');
+      const sound = document.querySelector('#ar-sound'); // ดึงค่าเสียงมา
 
-        // คลิกปุ๊บ เข้า AR ปั๊บ
-        document.addEventListener('click', () => {
-            if (modelViewer.canActivateAR) {
-                modelViewer.activateAR();
-                overlay.style.display = 'none'; // ซ่อนตัวอักษรเมื่อเข้า AR
-            }
-        }, { once: true });
-    </script>
+      document.addEventListener('click', () => {
+          // เมื่อคลิกปุ๊บ:
+          
+          // 1. เข้าโหมด AR
+          if (modelViewer.canActivateAR) {
+              modelViewer.activateAR();
+          }
+
+          // 2. เริ่มเล่นเสียง
+          sound.play().catch(e => console.log("Audio play failed:", e));
+
+          // 3. ซ่อนตัวหนังสือบอกทาง
+          if(overlay) overlay.style.display = 'none';
+          
+      }, { once: true });
+  </script>
   </body>
 </html>
