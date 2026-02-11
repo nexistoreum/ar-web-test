@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Earth AR - Instant Placement</title>
+    <title>Mars AR - Interactive</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
@@ -9,30 +9,30 @@
       body { margin: 0; overflow: hidden; background-color: #000; }
       model-viewer { width: 100%; height: 100vh; }
       
-      /* ข้อความแนะนำกลางจอ */
+      /* ปรับ Overlay ให้ดูเหมือนปุ่มที่กดได้จริงๆ */
       #instructions {
         position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        top: 0; left: 0; width: 100%; height: 100%;
+        display: flex; flex-direction: column;
+        justify-content: center; align-items: center;
         color: white;
         text-align: center;
         font-family: sans-serif;
-        pointer-events: none; /* ให้คลิกทะลุไปข้างหลังได้ */
-        background: rgba(0,0,0,0.5);
-        padding: 20px;
-        border-radius: 15px;
-        border: 1px solid rgba(255,255,255,0.3);
+        background: rgba(0,0,0,0.4); /* มืดลงนิดหน่อยเพื่อให้ข้อความเด่น */
+        z-index: 10;
+        cursor: pointer;
       }
     </style>
   </head>
   <body>
 
     <div id="instructions">
-      <h1 style="margin:0;">🌍</h1>
-      <p>แตะตรงไหนก็ได้<br>เพื่อเริ่มสแกนพื้น</p>
+      <h1 style="margin:0; font-size: 60px;">🔴</h1>
+      <p style="font-size: 20px;">แตะหน้าจอเพื่อเริ่มสแกนพื้น<br><span style="font-size: 14px; opacity: 0.7;">(เพื่อเปิดกล้องและเสียง)</span></p>
     </div>
+
     <audio id="ar-sound" src="VENUS_Master.mp3" loop></audio>
+
     <model-viewer 
         id="my-ar-model"
         src="mars_glb-opt.glb" 
@@ -40,32 +40,56 @@
         ar-modes="webxr scene-viewer quick-look" 
         ar-placement="floor"
         camera-controls 
-        shadow-intensity="1" 
-        autoplay                
+        shadow-intensity="1"
+        exposure="1.5"             environment-image="neutral" autoplay                
         animation-name="All Animations"
         auto-rotate
-        scale="0.5 0.5 0.5"> </model-viewer>
+        scale="0.5 0.5 0.5"> 
+    </model-viewer>
 
     <script>
       const modelViewer = document.querySelector('#my-ar-model');
       const overlay = document.querySelector('#instructions');
-      const sound = document.querySelector('#ar-sound'); // ดึงค่าเสียงมา
+      const sound = document.querySelector('#ar-sound');
 
-      document.addEventListener('click', () => {
-          // เมื่อคลิกปุ๊บ:
-          
-          // 1. เข้าโหมด AR
-          if (modelViewer.canActivateAR) {
-              modelViewer.activateAR();
-          }
+      // ฟังก์ชันสำหรับสั่งให้แอนิเมชันเริ่มทำงาน
+      const startAnimation = () => {
+        if (modelViewer.availableAnimations.length > 0) {
+          modelViewer.animationName = 'All Animations';
+          modelViewer.play();
+          console.log("Animation started!");
+        }
+      };
 
-          // 2. เริ่มเล่นเสียง
-          sound.play().catch(e => console.log("Audio play failed:", e));
+      // 1. ทันทีที่โหลดโมเดลเสร็จ ให้ลองสั่งเล่นทันที
+      modelViewer.addEventListener('load', () => {
+        startAnimation();
+      });
 
-          // 3. ซ่อนตัวหนังสือบอกทาง
-          if(overlay) overlay.style.display = 'none';
-          
+      // 2. เมื่อผู้ใช้คลิกหน้าจอ (เพื่อเข้า AR/เปิดเสียง) ให้สั่งเล่นซ้ำอีกรอบเพื่อความชัวร์
+      overlay.addEventListener('click', () => {
+        // เข้าโหมด AR
+        if (modelViewer.canActivateAR) {
+          modelViewer.activateAR();
+        }
+
+        // เปิดเสียง
+        sound.play().catch(e => console.log("Audio play failed:", e));
+
+        // บังคับเล่นแอนิเมชันอีกครั้ง (ป้องกันกรณีแรกไม่ทำงาน)
+        startAnimation();
+
+        // ซ่อนหน้าจอแนะนำ
+        overlay.style.display = 'none';
       }, { once: true });
-  </script>
+
+      // 3. สำหรับบางเครื่องที่โหลดช้ามาก ให้เช็กทุก 1 วินาทีจนกว่าแอนิเมชันจะเล่น
+      const checkAnim = setInterval(() => {
+        if (modelViewer.availableAnimations.length > 0 && !modelViewer.paused) {
+          startAnimation();
+          clearInterval(checkAnim); // เล่นแล้วให้หยุดเช็ก
+        }
+      }, 1000);
+    </script>
   </body>
 </html>
