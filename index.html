@@ -44,52 +44,52 @@
         exposure="1.5"             environment-image="neutral" autoplay                
         animation-name="All Animations"
         auto-rotate
-        scale="0.5 0.5 0.5"> 
+        scale="0.1 0.1 0.1"
+        camera-target="0m 0m 2m"> 
     </model-viewer>
 
     <script>
-      const modelViewer = document.querySelector('#my-ar-model');
-      const overlay = document.querySelector('#instructions');
-      const sound = document.querySelector('#ar-sound');
+        const modelViewer = document.querySelector('#my-ar-model');
+        const overlay = document.querySelector('#instructions');
+        const sound = document.querySelector('#ar-sound');
 
-      // ฟังก์ชันสำหรับสั่งให้แอนิเมชันเริ่มทำงาน
-      const startAnimation = () => {
-        if (modelViewer.availableAnimations.length > 0) {
-          modelViewer.animationName = 'All Animations';
-          modelViewer.play();
-          console.log("Animation started!");
-        }
-      };
+        // ฟังก์ชัน "บังคับ" ให้แอนิเมชันทำงาน
+        const forcePlayAnimation = () => {
+            console.log("พยายามเล่นแอนิเมชัน...");
+            modelViewer.animationName = 'All Animations';
+            modelViewer.play();
+        };
 
-      // 1. ทันทีที่โหลดโมเดลเสร็จ ให้ลองสั่งเล่นทันที
-      modelViewer.addEventListener('load', () => {
-        startAnimation();
-      });
+        // 1. ทันทีที่คลิกหน้าจอ (เพื่อเข้า AR) ให้สั่งเล่นเผื่อไว้ก่อน
+        overlay.addEventListener('click', () => {
+            if (modelViewer.canActivateAR) {
+                modelViewer.activateAR();
+            }
+            forcePlayAnimation(); // สั่งเล่นครั้งที่ 1
+            overlay.style.display = 'none';
+        }, { once: true });
 
-      // 2. เมื่อผู้ใช้คลิกหน้าจอ (เพื่อเข้า AR/เปิดเสียง) ให้สั่งเล่นซ้ำอีกรอบเพื่อความชัวร์
-      overlay.addEventListener('click', () => {
-        // เข้าโหมด AR
-        if (modelViewer.canActivateAR) {
-          modelViewer.activateAR();
-        }
+        // 2. เมื่อโมเดลวางบนพื้นสำเร็จ (จังหวะที่สำคัญที่สุด)
+        modelViewer.addEventListener('object-placed', () => {
+            sound.play().catch(e => console.log("Audio failed:", e));
+            
+            // สั่งเล่นครั้งที่ 2 (หน่วงเวลาเล็กน้อยเพื่อให้ระบบ AR พร้อม)
+            setTimeout(() => {
+                forcePlayAnimation();
+            }, 500);
+        });
 
-        // เปิดเสียง
-        sound.play().catch(e => console.log("Audio play failed:", e));
+        // 3. สำหรับโหมด 3D ธรรมดา (ไม่ได้เข้า AR) ให้เล่นทันทีที่โหลดเสร็จ
+        modelViewer.addEventListener('load', () => {
+            forcePlayAnimation();
+        });
 
-        // บังคับเล่นแอนิเมชันอีกครั้ง (ป้องกันกรณีแรกไม่ทำงาน)
-        startAnimation();
-
-        // ซ่อนหน้าจอแนะนำ
-        overlay.style.display = 'none';
-      }, { once: true });
-
-      // 3. สำหรับบางเครื่องที่โหลดช้ามาก ให้เช็กทุก 1 วินาทีจนกว่าแอนิเมชันจะเล่น
-      const checkAnim = setInterval(() => {
-        if (modelViewer.availableAnimations.length > 0 && !modelViewer.paused) {
-          startAnimation();
-          clearInterval(checkAnim); // เล่นแล้วให้หยุดเช็ก
-        }
-      }, 1000);
+        // 4. ไม้ตายสุดท้าย: เช็กทุกๆ 2 วินาที ถ้าแอนิเมชันยังไม่เล่น ให้สั่งซ้ำ
+        setInterval(() => {
+            if (modelViewer.availableAnimations.length > 0 && modelViewer.paused) {
+                forcePlayAnimation();
+            }
+        }, 2000);
     </script>
   </body>
 </html>
