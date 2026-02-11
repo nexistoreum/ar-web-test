@@ -34,18 +34,17 @@
     <audio id="ar-sound" src="VENUS_Master.mp3" loop></audio>
 
     <model-viewer 
-        id="my-ar-model"
-        src="mars_glb-opt.glb" 
-        ar 
-        ar-modes="webxr scene-viewer quick-look" 
-        ar-placement="floor"
-        camera-controls 
-        shadow-intensity="1"
-        exposure="1.5"             environment-image="neutral" autoplay                
-        animation-name="All Animations"
-        auto-rotate
-        scale="0.2 0.2 0.2"> 
-    </model-viewer>
+      id="my-ar-model"
+      src="https://modelviewer.dev/shared-assets/models/RobotExpressive.glb" 
+      ar 
+      ar-modes="webxr scene-viewer quick-look" 
+      ar-placement="floor"
+      camera-controls 
+      shadow-intensity="1"
+      exposure="1.5"
+      environment-image="neutral"
+      scale="0.2 0.2 0.2"> 
+      </model-viewer>
 
     <script>
         const modelViewer = document.querySelector('#my-ar-model');
