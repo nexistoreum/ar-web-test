@@ -1,42 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>My WebAR Project</title>
+    <title>Earth AR - Instant Placement</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
-      body { margin: 0; }
-      model-viewer { width: 100%; height: 100vh; background-color: #f0f0f0; }
-      .ar-button {
-        background-color: #ffffff; border-radius: 4px; border: none;
-        position: absolute; bottom: 16px; right: 16px; padding: 12px;
-        font-family: sans-serif; font-weight: bold; cursor: pointer;
+      body { margin: 0; overflow: hidden; background-color: #000; }
+      model-viewer { width: 100%; height: 100vh; }
+      
+      /* ข้อความแนะนำกลางจอ */
+      #instructions {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        text-align: center;
+        font-family: sans-serif;
+        pointer-events: none; /* ให้คลิกทะลุไปข้างหลังได้ */
+        background: rgba(0,0,0,0.5);
+        padding: 20px;
+        border-radius: 15px;
+        border: 1px solid rgba(255,255,255,0.3);
       }
     </style>
   </head>
   <body>
+
+    <div id="instructions">
+      <h1 style="margin:0;">🌍</h1>
+      <p>แตะตรงไหนก็ได้<br>เพื่อเริ่มสแกนพื้น</p>
+    </div>
 
     <model-viewer 
         id="my-ar-model"
         src="earth_glb-opt.glb" 
         ar 
         ar-modes="webxr scene-viewer quick-look" 
+        ar-placement="floor"
         camera-controls 
-        auto-rotate             shadow-intensity="1" 
-        alt="3D Earth Model"
-        style="background-color: #000;">
-    </model-viewer>
+        shadow-intensity="1" 
+        autoplay
+        auto-rotate
+        scale="0.5 0.5 0.5"> </model-viewer>
+
     <script>
-        // 2. ทันทีที่โหลดหน้าเว็บเสร็จ ถ้าผู้ใช้แตะที่ไหนก็ได้บนหน้าจอ ให้เด้งเข้า AR ทันที
+        const modelViewer = document.querySelector('#my-ar-model');
+        const overlay = document.querySelector('#instructions');
+
+        // คลิกปุ๊บ เข้า AR ปั๊บ
         document.addEventListener('click', () => {
-            const modelViewer = document.querySelector('#my-ar-model');
-            
-            // เช็คว่าตอนนี้อยู่ในโหมด AR หรือยัง ถ้ายังให้สั่งเปิดเลย
             if (modelViewer.canActivateAR) {
-            modelViewer.activateAR();
+                modelViewer.activateAR();
+                overlay.style.display = 'none'; // ซ่อนตัวอักษรเมื่อเข้า AR
             }
-        }, { once: true }); // ทำงานแค่ครั้งเดียวตอนแตะครั้งแรก
+        }, { once: true });
     </script>
   </body>
 </html>
