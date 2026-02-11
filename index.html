@@ -74,9 +74,15 @@
             }
         });
 
+        // ในจังหวะที่โมเดลถูกวางบนพื้น
         modelViewer.addEventListener('object-placed', () => {
-            sound.play().catch(e => console.log("Audio failed:", e));
-            forcePlay();
+            sound.play().then(() => {
+                console.log("เสียงดังแล้ว!");
+            }).catch(e => {
+                console.log("เสียงยังเล่นไม่ได้เพราะ:", e);
+            });
+            
+            forcePlay(); // สั่งแอนิเมชันเล่น
         });
 
         // ตรวจสอบสถานะทุก 2 วินาที (เฉพาะตอนที่มันหยุด)
