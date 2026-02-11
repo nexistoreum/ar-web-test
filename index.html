@@ -36,7 +36,7 @@
     <model-viewer 
       id="my-ar-model"
       src="mars_glb-opt.glb" 
-      ar 
+      ios-src="mars.usdz" ar 
       ar-modes="webxr scene-viewer quick-look" 
       ar-placement="floor"
       camera-controls 
@@ -70,10 +70,17 @@
         }, { once: true });
 
         // เมื่อวางวัตถุบนพื้นแล้ว ให้เริ่มเล่นเสียงจริงจัง
-        modelViewer.addEventListener('object-placed', () => {
-            sound.play();
-            modelViewer.play(); // ย้ำอีกรอบเพื่อความมั่นใจ
-        });
+      modelViewer.addEventListener('ar-status', (event) => {
+          if (event.detail.status === 'session-started') {
+              // เมื่อเข้าโหมด AR (โดยเฉพาะ Android) ให้เริ่มเล่นเสียงทันที
+              sound.play();
+          }
+      });
+
+      modelViewer.addEventListener('object-placed', () => {
+          sound.play();
+          modelViewer.play();
+      });
     </script>
   </body>
 </html>
