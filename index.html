@@ -43,50 +43,37 @@
       shadow-intensity="1"
       exposure="1.5"
       environment-image="neutral"
-      scale="0.2 0.2 0.2"> 
-      </model-viewer>
+      scale="0.2 0.2 0.2"
+      autoplay> </model-viewer>
 
     <script>
         const modelViewer = document.querySelector('#my-ar-model');
         const overlay = document.querySelector('#instructions');
         const sound = document.querySelector('#ar-sound');
 
-        const forcePlay = () => {
-            if (modelViewer.availableAnimations.length > 0) {
-                // ถ้าแอนิเมชันหยุดอยู่ ให้สั่งเล่น
-                if (modelViewer.paused) {
-                    modelViewer.play();
-                }
-            }
-        };
-
         overlay.addEventListener('click', () => {
+            // 1. ปลดล็อกเสียง (เล่นแล้วหยุดทันทีเพื่อให้เบราว์เซอร์อนุญาต)
+            sound.play().then(() => {
+                sound.pause();
+                sound.currentTime = 0;
+            }).catch(e => console.log("Audio unlock error:", e));
+
+            // 2. สั่งเล่น Animation ของโมเดล
+            modelViewer.play();
+
+            // 3. เข้าสู่โหมด AR
             if (modelViewer.canActivateAR) {
                 modelViewer.activateAR();
             }
-            forcePlay();
+            
             overlay.style.display = 'none';
         }, { once: true });
 
-        modelViewer.addEventListener('ar-status', (event) => {
-            if (event.detail.status === 'session-started') {
-                setTimeout(forcePlay, 1000); // รอให้ AR นิ่งก่อนค่อยสั่งเล่น
-            }
-        });
-
-        // ในจังหวะที่โมเดลถูกวางบนพื้น
+        // เมื่อวางวัตถุบนพื้นแล้ว ให้เริ่มเล่นเสียงจริงจัง
         modelViewer.addEventListener('object-placed', () => {
-            sound.play().then(() => {
-                console.log("เสียงดังแล้ว!");
-            }).catch(e => {
-                console.log("เสียงยังเล่นไม่ได้เพราะ:", e);
-            });
-            
-            forcePlay(); // สั่งแอนิเมชันเล่น
+            sound.play();
+            modelViewer.play(); // ย้ำอีกรอบเพื่อความมั่นใจ
         });
-
-        // ตรวจสอบสถานะทุก 2 วินาที (เฉพาะตอนที่มันหยุด)
-        setInterval(forcePlay, 2000);
     </script>
   </body>
 </html>
