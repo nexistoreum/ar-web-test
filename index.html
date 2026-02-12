@@ -13,10 +13,14 @@
   src="mars_glb-opt.glb"
   ios-src="toy_biplane_realistic.usdz"
   ar
-  ar-scale="auto"  autoplay
+  ar-scale="auto"
   camera-controls
-  shadow-intensity="1"
-  alt="A 3D model">
+  min-camera-orbit="auto auto auto" 
+  max-camera-orbit="auto auto auto"
+  min-field-of-view="10deg"
+  max-field-of-view="180deg"
+  interaction-prompt="none"
+  shadow-intensity="1">
   
   <button slot="ar-button"
     style="background:white;border-radius:4px;border:none;position:absolute;top:16px;right:16px;padding:10px;">
