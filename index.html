@@ -13,7 +13,7 @@
   src="mars_glb-opt.glb"
   ios-src="toy_biplane_realistic.usdz"
   ar
-  autoplay
+  ar-scale="auto"  autoplay
   camera-controls
   shadow-intensity="1"
   alt="A 3D model">
@@ -37,7 +37,7 @@
     mv.setAttribute('ar-modes', 'quick-look');
   } else {
     // Android / อื่น ๆ ใช้ WebXR ก่อน
-    mv.setAttribute('ar-modes', 'scene-viewer');
+    mv.setAttribute('ar-modes', 'webxr');
   }
 
   // เผื่อกรณีต้องบังคับเล่น animation หลังโหลด
