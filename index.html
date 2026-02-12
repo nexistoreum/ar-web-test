@@ -11,7 +11,7 @@
 <model-viewer
   id="mv"
   src="mars_glb-opt.glb"
-  ios-src="mo1.usdz"
+  ios-src="mo2.usdz"
   ar
   autoplay
   camera-controls
@@ -37,7 +37,7 @@
     mv.setAttribute('ar-modes', 'quick-look');
   } else {
     // Android / อื่น ๆ ใช้ WebXR ก่อน
-    mv.setAttribute('ar-modes', 'webxr scene-viewer');
+    mv.setAttribute('ar-modes', 'scene-viewer');
   }
 
   // เผื่อกรณีต้องบังคับเล่น animation หลังโหลด
