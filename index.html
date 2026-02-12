@@ -10,9 +10,8 @@
 
 <model-viewer 
   src="mars_glb-opt.glb" 
-  ios-src="toy_biplane_realistic.usdz" 
   ar 
-  ar-modes="quick-look" 
+  ar-modes="webxr scene-viewer quick-look" 
   autoplay
   camera-controls 
   touch-action="pan-y" 
@@ -22,4 +21,16 @@
   <button slot="ar-button" style="background-color: white; border-radius: 4px; border: none; position: absolute; top: 16px; right: 16px; padding: 10px;">
     👋 เริ่มใช้งาน AR
   </button>
+
+  
 </model-viewer>
+
+  <script>
+    const modelViewer = document.querySelector("model-viewer");
+
+    modelViewer.addEventListener("ar-status", (event) => {
+      if (event.detail.status === "session-started") {
+        modelViewer.play();
+      }
+    });
+  </script>
