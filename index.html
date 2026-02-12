@@ -8,34 +8,40 @@
   }
 </style>
 
-<model-viewer 
-  src="mars_glb-opt.glb" 
-  ar 
-  ar-modes="webxr scene-viewer quick-look" 
+<model-viewer
+  id="mv"
+  src="mars_glb-opt.glb"
+  ios-src="mo1.usdz"
+  ar
   autoplay
-  camera-controls 
-  touch-action="pan-y" 
-  alt="A 3D model" 
-  shadow-intensity="1">
+  camera-controls
+  shadow-intensity="1"
+  alt="A 3D model">
   
-  <button slot="ar-button" style="background-color: white; border-radius: 4px; border: none; position: absolute; top: 16px; right: 16px; padding: 10px;">
+  <button slot="ar-button"
+    style="background:white;border-radius:4px;border:none;position:absolute;top:16px;right:16px;padding:10px;">
     👋 เริ่มใช้งาน AR
   </button>
-
-  
 </model-viewer>
 
-  <script>
-    const modelViewer = document.querySelector("model-viewer");
+<script>
+  const mv = document.getElementById('mv');
 
-    modelViewer.addEventListener("load", () => {
-      modelViewer.play();
-    });
+  // ตรวจ iOS/Safari
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  const isIOS = /iPad|iPhone|iPod/.test(ua);
+  const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
 
-    modelViewer.addEventListener("ar-status", (event) => {
-      if (event.detail.status === "session-started") {
-        modelViewer.play();
-      }
-    });
+  if (isIOS && isSafari) {
+    // บังคับใช้ Quick Look
+    mv.setAttribute('ar-modes', 'quick-look');
+  } else {
+    // Android / อื่น ๆ ใช้ WebXR ก่อน
+    mv.setAttribute('ar-modes', 'webxr scene-viewer');
+  }
 
-  </script>
+  // เผื่อกรณีต้องบังคับเล่น animation หลังโหลด
+  mv.addEventListener('load', () => {
+    try { mv.play(); } catch(e) {}
+  });
+</script>
