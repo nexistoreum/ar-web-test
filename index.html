@@ -28,9 +28,14 @@
   <script>
     const modelViewer = document.querySelector("model-viewer");
 
+    modelViewer.addEventListener("load", () => {
+      modelViewer.play();
+    });
+
     modelViewer.addEventListener("ar-status", (event) => {
       if (event.detail.status === "session-started") {
         modelViewer.play();
       }
     });
+
   </script>
